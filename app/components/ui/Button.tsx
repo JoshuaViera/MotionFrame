@@ -14,18 +14,18 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg';
   
   const variants = {
-    primary: 'bg-electric-blue hover:bg-electric-blue-dark text-dark',
-    secondary: 'bg-gray-700 hover:bg-gray-600 text-white',
-    outline: 'border-2 border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-dark'
+    primary: 'bg-electric-blue hover:bg-electric-blue-dark text-dark hover:shadow-electric-blue/50 hover:shadow-xl',
+    secondary: 'bg-gray-700 hover:bg-gray-600 text-white hover:shadow-xl',
+    outline: 'border-2 border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-dark hover:shadow-electric-blue/50 hover:shadow-xl'
   };
   
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg'
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-6 py-2.5 text-base',
+    lg: 'px-8 py-3 text-lg'
   };
   
   return (

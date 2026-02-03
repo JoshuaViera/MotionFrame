@@ -13,9 +13,9 @@ export const Card: React.FC<CardProps> = ({
   onClick,
   selected = false
 }) => {
-  const baseStyles = 'bg-gray-800 rounded-lg border-2 transition-all duration-200';
-  const interactiveStyles = onClick ? 'cursor-pointer hover:border-electric-blue' : '';
-  const selectedStyles = selected ? 'border-electric-blue bg-gray-700' : 'border-gray-700';
+  const baseStyles = 'bg-gray-800/50 backdrop-blur-sm rounded-xl border-2 transition-all duration-200 shadow-lg';
+  const interactiveStyles = onClick ? 'cursor-pointer hover:border-electric-blue hover:shadow-electric-blue/20 hover:shadow-xl' : '';
+  const selectedStyles = selected ? 'border-electric-blue bg-gray-700/50 shadow-electric-blue/30 shadow-xl' : 'border-gray-700/50';
   
   return (
     <div

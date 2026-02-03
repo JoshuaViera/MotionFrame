@@ -26,20 +26,20 @@ export const PromptInput: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="text-center mb-8">
-        <h2 className="text-4xl font-bold text-white mb-2">
+        <h2 className="text-4xl font-bold text-white mb-3">
           Describe Your Vision
         </h2>
-        <p className="text-gray-400">
+        <p className="text-gray-400 text-lg">
           Enter a text prompt to generate your image
         </p>
       </div>
       
-      <Card className="p-6 mb-6">
+      <Card className="p-8 mb-6">
         <textarea
           value={localPrompt}
           onChange={(e) => setLocalPrompt(e.target.value)}
           placeholder="A majestic dragon soaring through clouds..."
-          className="w-full h-32 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-electric-blue focus:border-transparent resize-none"
+          className="w-full h-32 px-4 py-3 bg-gray-900/50 backdrop-blur-sm border-2 border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-electric-blue focus:border-electric-blue resize-none transition-all"
         />
         
         <div className="flex justify-between items-center mt-4">
@@ -65,7 +65,7 @@ export const PromptInput: React.FC = () => {
           {examplePrompts.map((example, index) => (
             <Card
               key={index}
-              className="p-4 cursor-pointer hover:bg-gray-700"
+              className="p-4 hover:bg-gray-700/50"
               onClick={() => setLocalPrompt(example)}
             >
               <p className="text-sm text-gray-300">{example}</p>

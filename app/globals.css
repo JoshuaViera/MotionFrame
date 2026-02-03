@@ -10,7 +10,8 @@
 
 @layer base {
   body {
-    @apply bg-dark text-white;
+    background-color: #0a0a0a;
+    color: white;
   }
 }
 
@@ -37,6 +38,10 @@
   
   .text-dark {
     color: var(--dark);
+  }
+  
+  .bg-dark {
+    background-color: var(--dark);
   }
 }
 
