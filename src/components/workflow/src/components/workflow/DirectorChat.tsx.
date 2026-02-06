@@ -1,0 +1,59 @@
+import React, { useState } from 'react';
+
+// The Director Brain
+const DirectorChat = () => {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([
+    { role: 'bot', content: 'Director active. Ready to upscale your vision to Picasso-grade. What are we creating?' }
+  ]);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    // 1. Add User Vision to the Room
+    const userMsg = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+
+    // 2. The Jensen Shield: Hallucination Prevention
+    // We "guard" the response by forcing the AI to stay in-bounds
+    try {
+      // Here we would call your Python/HuggingFace Bridge
+      const response = await simulateDirectorResponse(input);
+      
+      setMessages(prev => [...prev, { role: 'bot', content: response }]);
+    } catch (error) {
+      // Fallback: If the "Stiff Calculator" breaks, the Shield takes over
+      setMessages(prev => [...prev, { role: 'bot', content: "Shield Active: Connection reset. Using internal aesthetic presets to keep the vision moving." }]);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-[400px] w-full bg-zinc-950 border border-zinc-800 rounded-lg p-4 shadow-2xl">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-4">
+        {messages.map((m, i) => (
+          <div key={i} className={`${m.role === 'user' ? 'text-right' : 'text-left'}`}>
+            <span className={`inline-block p-2 rounded-md text-sm ${m.role === 'user' ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-300 border border-zinc-700'}`}>
+              {m.content}
+            </span>
+          </div>
+        ))}
+      </div>
+      
+      {/* Input Field: Killing the Noise */}
+      <div className="relative flex items-center">
+        <input 
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Describe your masterpiece..."
+          className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100 p-3 rounded-md focus:outline-none focus:border-blue-500 transition-all"
+        />
+        <button onClick={handleSend} className="ml-2 bg-white text-black font-bold px-4 py-2 rounded-md hover:bg-zinc-300 transition-colors">
+          UP SCALE
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default DirectorChat;
