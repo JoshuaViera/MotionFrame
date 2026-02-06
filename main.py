@@ -24,3 +24,22 @@ def chef_engine(user_input):
             gourmet_prompt = enhance_recipe(parts[1])
             print(f"👨‍🍳 [CHEF REMY]: Adding a dash of {gourmet_prompt.split(',')[1]}...")
             print(f"✨ [FINAL RECIPE]: {gourmet_prompt}")
+
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+import os
+from dotenv import load_dotenv
+
+load_dotenv() # This grabs your key from the .env file
+
+app = FastAPI()
+
+class ChatRequest(BaseModel):
+    prompt: str
+
+@app.post("/api/director-upscale")
+async def upscale_vision(request: ChatRequest):
+    # This is where your "Aesthetic Authority" happens
+    upscaled = f"Masterpiece Vision: {request.prompt}, 8k, cinematic, hyper-realistic"
+    return {"upscaledPrompt": upscaled}
