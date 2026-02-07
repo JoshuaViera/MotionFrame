@@ -98,3 +98,36 @@ async def secure_upscale(request: ChatRequest, key: str = Security(get_beta_guar
         "lighting_vectors": ["Volumetric", "Directional", "Ambient Occlusion"],
         "is_renderable": True
     }
+
+
+import os
+import shutil
+from pathlib import Path
+
+# Define the Root of the Vault
+VAULT_BASE_DIR = Path("./private_vault")
+
+def initialize_user_vault(user_id: str):
+    """
+    Creates a secure, private folder for the user if it doesn't exist.
+    """
+    user_path = VAULT_BASE_DIR / user_id
+    if not user_path.exists():
+        user_path.mkdir(parents=True, exist_ok=True)
+        # Create sub-folders for organization (Marketable feature)
+        (user_path / "renders").mkdir()
+        (user_path / "prompts").mkdir()
+    return user_path
+
+@app.post("/api/vault/save")
+async def save_to_vault(user_id: str, file_name: str, data: bytes, key: str = Security(get_beta_guard)):
+    """
+    The Security Guard saves data into the user's private silo.
+    """
+    user_path = initialize_user_vault(user_id)
+    file_path = user_path / "renders" / file_name
+    
+    with open(file_path, "wb") as f:
+        f.write(data)
+        
+    return {"status": "Securely Stored", "vault_id": user_id, "location": str(file_path)}
