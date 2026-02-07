@@ -4,18 +4,55 @@
 
 :root {
   --electric-blue: #00d4ff;
-  --electric-blue-dark: #00a8cc;
-  --dark: #0a0a0a;
+  --electric-blue-dark: #0088aa;
+  --obsidian: #050505;
+  --void: #020202;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-hover: rgba(255, 255, 255, 0.06);
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
 }
 
 @layer base {
   body {
-    background-color: #0a0a0a;
+    background-color: var(--void);
     color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(0, 212, 255, 0.03) 0%, transparent 40%);
+    background-attachment: fixed;
   }
 }
 
 @layer utilities {
+  .bg-glass {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+  }
+  
+  .glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .glass-card:hover {
+    background: var(--glass-hover);
+    border-color: rgba(0, 212, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.05);
+    transform: translateY(-2px);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+
   .bg-electric-blue {
     background-color: var(--electric-blue);
   }
@@ -34,14 +71,6 @@
   
   .ring-electric-blue {
     --tw-ring-color: var(--electric-blue);
-  }
-  
-  .text-dark {
-    color: var(--dark);
-  }
-  
-  .bg-dark {
-    background-color: var(--dark);
   }
 }
 

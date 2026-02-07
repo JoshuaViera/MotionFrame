@@ -15,13 +15,13 @@ export const GenerationView: React.FC = () => {
     setIsGenerating,
     setCurrentStep
   } = useMotionStore();
-  
+
   const [error, setError] = useState<string | null>(null);
 
   const generateImage = async () => {
     setIsGenerating(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -67,96 +67,144 @@ export const GenerationView: React.FC = () => {
   const handleContinue = () => {
     setCurrentStep('animation');
   };
-  
+
   const handleBack = () => {
     setCurrentStep('style');
   };
-  
+
   const handleRegenerate = () => {
     setGeneratedImage(null);
     setError(null);
     generateImage();
   };
-  
+
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-4xl font-bold text-white mb-2">
-          {isGenerating ? 'Generating Your Image...' : error ? 'Generation Failed' : 'Image Generated!'}
+    <div className="max-w-5xl mx-auto space-y-12 py-8">
+      <div className="text-center space-y-4">
+        <h2 className="text-5xl font-extrabold text-white tracking-tight">
+          {isGenerating ? (
+            <>Forging Your <span className="text-electric-blue text-glow">Masterpiece</span></>
+          ) : error ? (
+            <span className="text-red-500">Generation Failed</span>
+          ) : (
+            <>Visual <span className="text-electric-blue text-glow">Complete</span></>
+          )}
         </h2>
-        <p className="text-gray-400">
-          {isGenerating 
-            ? 'This may take 10-30 seconds depending on server load' 
-            : error 
-            ? 'Please try again' 
-            : 'Review your generated image'}
+        <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+          {isGenerating
+            ? 'Our AI is weaving pixels into reality. This usually takes 10-30 seconds.'
+            : error
+              ? 'We encountered a hiccup. Please check the details below.'
+              : 'Your vision has been materialized. Review the result before adding motion.'}
         </p>
       </div>
-      
-      <Card className="p-6 mb-6">
-        {/* Image Preview */}
-        <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
-          {isGenerating ? (
-            <div className="text-center">
-              <div className="w-16 h-16 border-4 border-electric-blue border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-gray-400">Generating image...</p>
-              <p className="text-sm text-gray-500 mt-2">This usually takes 10-30 seconds</p>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        {/* Main Canvas */}
+        <div className="lg:col-span-2">
+          <Card className="aspect-square relative overflow-hidden flex items-center justify-center bg-obsidian border-white/5">
+            {isGenerating ? (
+              <div className="flex flex-col items-center space-y-8">
+                <div className="relative">
+                  <div className="w-24 h-24 border-4 border-electric-blue/20 rounded-full animate-ping absolute inset-0" />
+                  <div className="w-24 h-24 border-t-4 border-electric-blue rounded-full animate-spin relative" />
+                </div>
+                <div className="space-y-2 text-center">
+                  <p className="text-white font-bold tracking-widest uppercase text-sm">Synthesizing</p>
+                  <p className="text-slate-500 text-xs animate-pulse">Wait for perfection...</p>
+                </div>
+              </div>
+            ) : error ? (
+              <div className="text-center p-8 space-y-6">
+                <div className="h-20 w-20 mx-auto bg-red-500/10 rounded-full flex items-center justify-center text-red-500 text-4xl">
+                  ⚠️
+                </div>
+                <div className="space-y-2">
+                  <p className="text-white font-bold">{error}</p>
+                  <p className="text-slate-500 text-sm max-w-xs mx-auto">
+                    {error.includes('loading')
+                      ? 'The AI model is currently warming up. This happens after periods of inactivity.'
+                      : 'Ensure your configuration is correct or try a different prompt.'}
+                  </p>
+                </div>
+                <Button variant="outline" onClick={handleRegenerate} className="border-red-500/50 text-red-400 hover:bg-red-500/10">
+                  Retry Generation
+                </Button>
+              </div>
+            ) : generatedImage ? (
+              <div className="relative w-full h-full group">
+                <img
+                  src={generatedImage.url}
+                  alt="Generated Masterpiece"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-obsidian/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute bottom-6 left-6 right-6 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 text-white">
+                  <p className="text-xs font-bold text-electric-blue uppercase tracking-widest mb-1">Generated Result</p>
+                  <p className="text-sm line-clamp-2 italic text-slate-300">"{generatedImage.prompt}"</p>
+                </div>
+              </div>
+            ) : null}
+          </Card>
+        </div>
+
+        {/* Sidebar Info */}
+        <div className="space-y-6">
+          <Card className="p-6 space-y-6 bg-glass">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Metadata</h3>
+
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">Input Prompt</span>
+                <p className="text-sm text-white leading-relaxed line-clamp-4">{prompt}</p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">Selected Style</span>
+                <div className="flex items-center space-x-2">
+                  <span className="h-2 w-2 rounded-full bg-electric-blue" />
+                  <p className="text-sm text-white capitalize">{selectedStyle}</p>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">Status</span>
+                <p className={`text-sm font-semibold ${isGenerating ? 'text-electric-blue animate-pulse' : error ? 'text-red-400' : 'text-green-400'}`}>
+                  {isGenerating ? 'Processing...' : error ? 'Error' : 'Ready'}
+                </p>
+              </div>
             </div>
-          ) : error ? (
-            <div className="text-center px-4">
-              <div className="text-red-500 text-4xl mb-4">⚠️</div>
-              <p className="text-red-400 mb-2">{error}</p>
-              <p className="text-sm text-gray-500">
-                {error.includes('loading') 
-                  ? 'The model is warming up. Please wait a moment and try again.'
-                  : 'Check your API key and try again.'}
+          </Card>
+
+          <Card className="p-6 bg-glass">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 text-amber-400">
+                <span className="text-lg">💡</span>
+                <h4 className="text-xs font-bold uppercase tracking-wider">Pro Tip</h4>
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                If the perspective feels off, try adding "symmetrical" or "centered" to your prompt.
               </p>
             </div>
-          ) : generatedImage ? (
-            <img
-              src={generatedImage.url}
-              alt="Generated"
-              className="w-full h-full object-contain"
-            />
-          ) : null}
-        </div>
-        
-        {/* Image Details */}
-        {generatedImage && !isGenerating && !error && (
-          <div className="space-y-2">
-            <div>
-              <span className="text-sm font-medium text-gray-400">Prompt:</span>
-              <p className="text-white">{generatedImage.prompt}</p>
+          </Card>
+
+          {!isGenerating && (
+            <div className="space-y-3">
+              <Button className="w-full" size="lg" onClick={handleContinue} disabled={!generatedImage || !!error}>
+                Add Motion Effects →
+              </Button>
+              <div className="flex space-x-3">
+                <Button variant="secondary" className="flex-1" onClick={handleBack}>
+                  Back
+                </Button>
+                <Button variant="secondary" className="flex-1" onClick={handleRegenerate}>
+                  Redo
+                </Button>
+              </div>
             </div>
-            <div>
-              <span className="text-sm font-medium text-gray-400">Style:</span>
-              <p className="text-white capitalize">{generatedImage.style}</p>
-            </div>
-          </div>
-        )}
-      </Card>
-      
-      {!isGenerating && (
-        <div className="flex justify-between items-center">
-          <div className="flex space-x-3">
-            <Button variant="outline" onClick={handleBack}>
-              ← Back to Style
-            </Button>
-            <Button 
-              variant="secondary" 
-              onClick={handleRegenerate}
-              disabled={isGenerating}
-            >
-              Regenerate
-            </Button>
-          </div>
-          {generatedImage && !error && (
-            <Button onClick={handleContinue} size="lg">
-              Add Animation →
-            </Button>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

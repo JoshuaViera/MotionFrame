@@ -25,9 +25,30 @@ const NEGATIVE_PROMPT = 'ugly, blurry, bad anatomy, bad quality, distorted, wate
 
 export async function generateImage(params: GenerateImageParams): Promise<HuggingFaceImageResponse> {
   const apiKey = process.env.HUGGINGFACE_API_KEY;
-  
-  if (!apiKey) {
-    throw new Error('HUGGINGFACE_API_KEY is not configured');
+
+  // Mock mode if API key is missing
+  if (!apiKey || apiKey === 'YOUR_HUGGINGFACE_API_KEY') {
+    console.warn('HUGGINGFACE_API_KEY is not configured. Using Mock Mode.');
+
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Return a beautiful placeholder from Unsplash based on style
+    const mockUrls: Record<string, string> = {
+      cinematic: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&q=80&w=1200',
+      anime: 'https://images.unsplash.com/photo-1578632738980-43314a5b4236?auto=format&fit=crop&q=80&w=1200',
+      photorealistic: 'https://images.unsplash.com/photo-1493246507139-91e8bef99c02?auto=format&fit=crop&q=80&w=1200',
+      abstract: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=80&w=1200',
+      retro: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200'
+    };
+
+    const url = mockUrls[params.style] || mockUrls.cinematic;
+
+    // Create a dummy blob for consistency
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    return { blob, url };
   }
 
   // Initialize HuggingFace Inference client
@@ -74,11 +95,11 @@ export async function generateImage(params: GenerateImageParams): Promise<Huggin
     if (error.message?.includes('loading')) {
       throw new Error('Model is loading. Please wait 20-30 seconds and try again.');
     }
-    
+
     if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
       throw new Error('Invalid API key. Please check your HuggingFace token.');
     }
-    
+
     throw new Error(`HuggingFace API error: ${error.message || error}`);
   }
 }

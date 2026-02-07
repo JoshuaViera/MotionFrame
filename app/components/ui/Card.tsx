@@ -13,10 +13,10 @@ export const Card: React.FC<CardProps> = ({
   onClick,
   selected = false
 }) => {
-  const baseStyles = 'bg-gray-800/50 backdrop-blur-sm rounded-xl border-2 transition-all duration-200 shadow-lg';
-  const interactiveStyles = onClick ? 'cursor-pointer hover:border-electric-blue hover:shadow-electric-blue/20 hover:shadow-xl' : '';
-  const selectedStyles = selected ? 'border-electric-blue bg-gray-700/50 shadow-electric-blue/30 shadow-xl' : 'border-gray-700/50';
-  
+  const baseStyles = 'glass-card rounded-2xl p-0 overflow-hidden';
+  const interactiveStyles = onClick ? 'cursor-pointer' : '';
+  const selectedStyles = selected ? 'border-electric-blue/50 bg-electric-blue/5 shadow-[0_0_25px_rgba(0,212,255,0.1)]' : '';
+
   return (
     <div
       className={`${baseStyles} ${interactiveStyles} ${selectedStyles} ${className}`}
