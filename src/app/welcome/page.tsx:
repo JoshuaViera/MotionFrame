@@ -1,0 +1,44 @@
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function WelcomePage() {
+  const [key, setKey] = useState('');
+  const [error, setError] = useState(false);
+  const router = useRouter();
+
+  const handleEnter = () => {
+    if (key === 'ANTIGRAVITY_2026_PRO') {
+      localStorage.setItem('beta_access_key', key);
+      router.push('/dashboard');
+    } else {
+      setError(true);
+    }
+  };
+
+  return (
+    <div className="h-screen bg-black flex flex-col items-center justify-center font-mono">
+      <div className="border border-emerald-500/30 p-8 rounded-lg shadow-[0_0_50px_rgba(16,185,129,0.1)] text-center">
+        <h1 className="text-emerald-500 text-3xl mb-2 tracking-tighter uppercase">Antigravity Engine</h1>
+        <p className="text-emerald-900 text-xs mb-8 italic">// Secure Access Required</p>
+        
+        <input 
+          type="password"
+          placeholder="ENTER BETA KEY"
+          className="bg-zinc-950 border border-emerald-500/20 text-emerald-500 p-3 w-64 text-center focus:outline-none focus:border-emerald-500"
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
+        />
+        
+        {error && <p className="text-red-500 text-[10px] mt-2">ACCESS DENIED: INVALID SIGNATURE</p>}
+        
+        <button 
+          onClick={handleEnter}
+          className="block w-full mt-4 bg-emerald-600 text-black py-2 font-bold hover:bg-emerald-400 transition-all"
+        >
+          INITIALIZE LINK
+        </button>
+      </div>
+    </div>
+  );
+}
