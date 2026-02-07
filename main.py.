@@ -64,3 +64,37 @@ async def private_generate(request: ChatRequest, x_user_id: str = Header(None)):
     print(f"Saving vision for user: {x_user_id}")
     
     return {"status": "success", "vault_path": f"/private/{x_user_id}/"}
+
+from fastapi import HTTPException, Security
+from fastapi.security.api_key import APIKeyHeader
+from pydantic import BaseModel, constr
+
+# The Beta Key - In production, this would be in your .env
+BETA_ACCESS_KEY = "ANTIGRAVITY_2026_PRO"
+api_key_header = APIKeyHeader(name="X-Beta-Key")
+
+# Hallucination Guard: Defines exactly what the AI is allowed to return
+class MasterpieceSchema(BaseModel):
+    upscaled_prompt: str
+    physics_engine: constr(pattern="^(Antigravity-v2|Nvidia-Wireframe)$")
+    lighting_vectors: list[str]
+    is_renderable: bool
+
+def get_beta_guard(api_key: str = Security(api_key_header)):
+    if api_key != BETA_ACCESS_KEY:
+        raise HTTPException(status_code=403, detail="Access Denied: Invalid Beta Key")
+    return api_key
+
+@app.post("/api/secure-upscale", response_model=MasterpieceSchema)
+async def secure_upscale(request: ChatRequest, key: str = Security(get_beta_guard)):
+    """
+    The Security Guard: No key, no entry. 
+    Strict Schema: No hallucinations allowed.
+    """
+    # Force the AI into a truth-based structure
+    return {
+        "upscaled_prompt": f"CINEMATIC_RENDER: {request.prompt}, 8k, ray-traced",
+        "physics_engine": "Antigravity-v2",
+        "lighting_vectors": ["Volumetric", "Directional", "Ambient Occlusion"],
+        "is_renderable": True
+    }
