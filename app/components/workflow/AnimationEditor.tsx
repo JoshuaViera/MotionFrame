@@ -16,7 +16,9 @@ export const AnimationEditor: React.FC = () => {
     setAnimationSettings,
     animatedPreview,
     setAnimatedPreview,
-    setCurrentStep
+    setCurrentStep,
+    isCinematicMode,
+    setIsCinematicMode
   } = useMotionStore();
 
   const handleApplyAnimation = () => {
@@ -35,7 +37,7 @@ export const AnimationEditor: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12 py-8">
+    <div className={`max-w-7xl mx-auto space-y-12 py-8 transition-opacity duration-700 ${isCinematicMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
       <div className="text-center space-y-4">
         <h2 className="text-5xl font-extrabold text-white tracking-tight">
           Breathe <span className="text-electric-blue text-glow">Life</span> into Art
@@ -47,28 +49,44 @@ export const AnimationEditor: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Preview Canvas */}
-        <div className="lg:col-span-8">
-          <Card className="aspect-video relative overflow-hidden bg-obsidian border-white/5 shadow-2xl">
+        <div className={`lg:col-span-8 transition-all duration-1000 ${isCinematicMode ? 'fixed inset-0 z-50 lg:col-span-12 m-0 rounded-none' : ''}`}>
+          <Card className={`aspect-video relative overflow-hidden bg-obsidian border-white/5 shadow-2xl transition-all duration-1000 ${isCinematicMode ? 'h-screen w-screen rounded-none' : ''}`}>
             <div className="absolute inset-0 flex items-center justify-center">
               {animatedPreview || generatedImage ? (
-                <div className={`w-full h-full relative overflow-hidden ${animatedPreview ? (animationSettings.type === 'zoom' ? 'animate-pulse' : 'animate-bounce') : ''}`}>
+                <div className={`w-full h-full relative overflow-hidden ${animatedPreview
+                  ? (animationSettings.type === 'zoom'
+                    ? 'animate-pulse'
+                    : animationSettings.type === 'hallucination'
+                      ? 'animate-glitch'
+                      : 'animate-bounce')
+                  : ''
+                  }`}>
                   <img
                     src={animatedPreview || generatedImage?.url}
                     alt="Motion Preview"
-                    className={`w-full h-full object-cover transition-transform duration-[var(--duration)] ease-in-out ${animatedPreview
-                        ? (animationSettings.type === 'zoom'
-                          ? 'scale-125'
+                    className={`w-full h-full object-cover transition-all duration-[var(--duration)] ease-in-out ${animatedPreview
+                      ? (animationSettings.type === 'zoom'
+                        ? 'scale-125'
+                        : animationSettings.type === 'hallucination'
+                          ? 'scale-150 hallucination-filter'
                           : 'translate-x-4 scale-110')
-                        : 'scale-100'
+                      : 'scale-100'
                       }`}
                     style={{
                       '--duration': `${animationSettings.duration}s`,
-                      filter: animatedPreview ? `blur(${100 - animationSettings.intensity}px)` : 'none'
+                      filter: animatedPreview
+                        ? (animationSettings.type === 'hallucination'
+                          ? `hue-rotate(${animationSettings.intensity * 3.6}deg) contrast(${100 + animationSettings.intensity}%)`
+                          : `blur(${100 - animationSettings.intensity}px)`)
+                        : 'none'
                     } as React.CSSProperties}
                   />
                   {/* Overlay for "Applied" feel */}
                   {animatedPreview && (
-                    <div className="absolute inset-0 bg-electric-blue/5 pointer-events-none" />
+                    <div className={`absolute inset-0 pointer-events-none ${animationSettings.type === 'hallucination'
+                      ? 'bg-electric-blue/20 mix-blend-overlay animate-rgb'
+                      : 'bg-electric-blue/5'
+                      }`} />
                   )}
                 </div>
               ) : (
@@ -80,16 +98,21 @@ export const AnimationEditor: React.FC = () => {
             </div>
 
             {/* Action Bar Overlay */}
-            <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center bg-black/40 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/5">
+            <div className={`absolute bottom-6 left-6 right-6 flex justify-between items-center bg-black/40 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/5 z-50 transition-all ${isCinematicMode ? 'bottom-20 max-w-sm mx-auto' : ''}`}>
               <div className="flex items-center space-x-3">
                 <div className={`h-2 w-2 rounded-full ${animatedPreview ? 'bg-green-400 animate-pulse' : 'bg-slate-600'}`} />
                 <span className="text-xs font-bold text-white uppercase tracking-widest">
                   {animatedPreview ? 'Motion Applied' : 'Awaiting Configuration'}
                 </span>
               </div>
-              <Button size="sm" variant="secondary" onClick={handleApplyAnimation}>
-                {animatedPreview ? 'Refresh Preview' : 'Apply Motion'}
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button size="sm" variant="secondary" onClick={() => setIsCinematicMode(!isCinematicMode)}>
+                  {isCinematicMode ? 'Exit Cinematic' : 'Cinematic View'}
+                </Button>
+                <Button size="sm" variant="secondary" onClick={handleApplyAnimation}>
+                  {animatedPreview ? 'Refresh Preview' : 'Apply Motion'}
+                </Button>
+              </div>
             </div>
           </Card>
         </div>
@@ -112,8 +135,8 @@ export const AnimationEditor: React.FC = () => {
                       key={type.value}
                       onClick={() => setAnimationSettings({ ...animationSettings, type: type.value as AnimationType })}
                       className={`px-4 py-3 rounded-xl border transition-all text-xs font-bold uppercase tracking-widest ${animationSettings.type === type.value
-                          ? 'border-electric-blue bg-electric-blue/10 text-electric-blue shadow-[0_0_15px_rgba(0,212,255,0.1)]'
-                          : 'border-white/5 bg-white/2 text-slate-400 hover:border-white/10 hover:bg-white/5'
+                        ? 'border-electric-blue bg-electric-blue/10 text-electric-blue shadow-[0_0_15px_rgba(0,212,255,0.1)]'
+                        : 'border-white/5 bg-white/2 text-slate-400 hover:border-white/10 hover:bg-white/5'
                         }`}
                     >
                       {type.label}

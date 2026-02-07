@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌌 MotionFrame v3.3: Obsidian Void
 
-## Getting Started
+**MotionFrame** is a premium, AI-powered image animation engine designed for creators who demand sophisticated motion patterns and reality-warping aesthetics.
 
-First, run the development server:
+![Release Version](https://img.shields.io/badge/version-3.3-electric--blue?style=for-the-badge)
+![Built for Obsidian Void](https://img.shields.io/badge/Release-Obsidian%20Void-020202?style=for-the-badge)
+
+## 🌠 New in v3.3
+- **Void Hallucination Pattern**: An experimental, high-intensity reality warping animation using chromatic shifts and glitch logic.
+- **Stress Mode UI**: The dashboard now reacts physically to high-intensity void power with subtle tremors and RGB shifts.
+- **DirectorChat**: High-performance control terminal for accelerated generative storytelling.
+- **Single-Command Orchestrator**: Launch the entire stack with `./launch.py`.
+
+## 🚀 Quick Start
+
+Ensure you have your `HUGGINGFACE_API_KEY` in your `.env` file.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Power on the engine
+chmod +x launch.py
+./launch.py
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Architecture
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS 4 + Custom Glass Morphism Engine
+- **AI Core**: HuggingFace Inference (Stable Diffusion v1-5)
+- **State**: Zustand Obsidian Buffer
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🎨 Aesthetic Guidelines
+Engineered for the **Obsidian Void**. 
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*“Breathe life into the abyss.”* — **Duvall Morgan**, Lead Engineer

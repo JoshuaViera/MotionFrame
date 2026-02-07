@@ -1,6 +1,6 @@
 export type StylePreset = 'cinematic' | 'anime' | 'photorealistic' | 'abstract' | 'retro';
 
-export type AnimationType = 'zoom' | 'drift';
+export type AnimationType = 'zoom' | 'drift' | 'hallucination';
 
 export type WorkflowStep = 'prompt' | 'style' | 'generation' | 'animation' | 'export';
 
@@ -28,19 +28,19 @@ export interface AppState {
   // Workflow
   currentStep: WorkflowStep;
   setCurrentStep: (step: WorkflowStep) => void;
-  
+
   // Prompt & Style
   prompt: string;
   setPrompt: (prompt: string) => void;
   selectedStyle: StylePreset;
   setSelectedStyle: (style: StylePreset) => void;
-  
+
   // Generated Images
   generatedImage: GeneratedImage | null;
   setGeneratedImage: (image: GeneratedImage | null) => void;
   isGenerating: boolean;
   setIsGenerating: (isGenerating: boolean) => void;
-  
+
   // Animation
   animationSettings: AnimationSettings;
   setAnimationSettings: (settings: AnimationSettings) => void;
@@ -48,7 +48,7 @@ export interface AppState {
   setAnimatedPreview: (preview: string | null) => void;
   isAnimating: boolean;
   setIsAnimating: (isAnimating: boolean) => void;
-  
+
   // Export
   exportSettings: ExportSettings;
   setExportSettings: (settings: ExportSettings) => void;
@@ -56,7 +56,11 @@ export interface AppState {
   setExportedGif: (gif: string | null) => void;
   isExporting: boolean;
   setIsExporting: (isExporting: boolean) => void;
-  
+
+  // UI State
+  isCinematicMode: boolean;
+  setIsCinematicMode: (isCinematic: boolean) => void;
+
   // Reset
   reset: () => void;
 }

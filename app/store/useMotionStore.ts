@@ -6,19 +6,19 @@ export const useMotionStore = create<AppState>((set) => ({
   // Workflow
   currentStep: 'prompt',
   setCurrentStep: (step) => set({ currentStep: step }),
-  
+
   // Prompt & Style
   prompt: '',
   setPrompt: (prompt) => set({ prompt }),
   selectedStyle: 'cinematic',
   setSelectedStyle: (style) => set({ selectedStyle: style }),
-  
+
   // Generated Images
   generatedImage: null,
   setGeneratedImage: (image) => set({ generatedImage: image }),
   isGenerating: false,
   setIsGenerating: (isGenerating) => set({ isGenerating }),
-  
+
   // Animation
   animationSettings: DEFAULT_ANIMATION_SETTINGS,
   setAnimationSettings: (settings) => set({ animationSettings: settings }),
@@ -26,7 +26,7 @@ export const useMotionStore = create<AppState>((set) => ({
   setAnimatedPreview: (preview) => set({ animatedPreview: preview }),
   isAnimating: false,
   setIsAnimating: (isAnimating) => set({ isAnimating }),
-  
+
   // Export
   exportSettings: DEFAULT_EXPORT_SETTINGS,
   setExportSettings: (settings) => set({ exportSettings: settings }),
@@ -34,7 +34,11 @@ export const useMotionStore = create<AppState>((set) => ({
   setExportedGif: (gif) => set({ exportedGif: gif }),
   isExporting: false,
   setIsExporting: (isExporting) => set({ isExporting }),
-  
+
+  // UI State
+  isCinematicMode: false,
+  setIsCinematicMode: (isCinematicMode) => set({ isCinematicMode }),
+
   // Reset
   reset: () => set({
     currentStep: 'prompt',
@@ -47,6 +51,7 @@ export const useMotionStore = create<AppState>((set) => ({
     isAnimating: false,
     exportSettings: DEFAULT_EXPORT_SETTINGS,
     exportedGif: null,
-    isExporting: false
+    isExporting: false,
+    isCinematicMode: false
   })
 }));

@@ -44,11 +44,23 @@ export const PromptInput: React.FC = () => {
           />
 
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2 text-slate-500">
-              <span className={`h-2 w-2 rounded-full ${localPrompt.length > 0 ? 'bg-electric-blue' : 'bg-slate-700'}`} />
-              <span className="text-sm font-medium">
-                {localPrompt.length} characters
-              </span>
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center space-x-2 text-slate-500">
+                <span className={`h-2 w-2 rounded-full ${localPrompt.length > 0 ? 'bg-electric-blue' : 'bg-slate-700'}`} />
+                <span className="text-sm font-medium">
+                  {localPrompt.length} characters
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  const voidKeywords = ['Obsidian void style', 'volumetric shadows', 'electric blue highlights', 'highly detailed 8k', 'cinematic composition', 'dark synthwave aesthetic'];
+                  const refined = `${localPrompt} ${voidKeywords.join(', ')}`;
+                  setLocalPrompt(refined);
+                }}
+                className="text-[10px] font-bold text-electric-blue hover:text-white uppercase tracking-[0.2em] transition-colors flex items-center space-x-2 group"
+              >
+                <span className="group-hover:animate-pulse">✧ Neural Enhancement</span>
+              </button>
             </div>
             <Button
               onClick={handleContinue}

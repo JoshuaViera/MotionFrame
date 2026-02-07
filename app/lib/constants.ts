@@ -38,6 +38,11 @@ export const ANIMATION_TYPES: { value: AnimationType; label: string; description
     value: 'drift',
     label: 'Drift',
     description: 'Gentle floating motion'
+  },
+  {
+    value: 'hallucination',
+    label: 'Void Hallucination',
+    description: 'Experimental reality warping and chromatic shifts'
   }
 ];
 

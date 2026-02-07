@@ -159,14 +159,35 @@ export const ExportView: React.FC = () => {
                 </div>
               </div>
 
+              {/* Compute Stats */}
+              <div className="p-4 bg-obsidian/50 rounded-2xl border border-white/5 space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Compute Spec</span>
+                  <span className="text-[9px] font-bold text-green-500 uppercase tracking-widest animate-pulse">Accelerated</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-slate-500 uppercase">GPU VRAM</p>
+                    <p className="text-xs font-bold text-white">80GB H100</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-slate-500 uppercase">Precision</p>
+                    <p className="text-xs font-bold text-white">FP16</p>
+                  </div>
+                </div>
+              </div>
+
               {!exportedGif && (
                 <Button
                   onClick={handleExport}
                   disabled={isExporting}
-                  className="w-full"
+                  className="w-full relative overflow-hidden group"
                   size="lg"
                 >
-                  {isExporting ? 'Encoding Art...' : 'Initiate Export'}
+                  <span className="relative z-10">{isExporting ? 'Encoding Art...' : 'Initiate Export'}</span>
+                  {isExporting && (
+                    <div className="absolute inset-0 bg-electric-blue/20 animate-pulse" />
+                  )}
                 </Button>
               )}
             </div>
