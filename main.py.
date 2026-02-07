@@ -48,3 +48,19 @@ async def upscale_vision(request: ChatRequest):
     # If validated or refined, send to the 'Masterpiece' logic
     final_prompt = validation_result["refined"]
     return {"upscaledPrompt": final_prompt}
+
+from fastapi import Header, HTTPException
+
+@app.post("/api/private/generate")
+async def private_generate(request: ChatRequest, x_user_id: str = Header(None)):
+    # Feature: Private Access Control
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Private Access Required: Provide User ID")
+    
+    # 1. Validate through the Shield
+    validation = validator.validate_vision(request.prompt)
+    
+    # 2. Save to Private Vault logic would go here
+    print(f"Saving vision for user: {x_user_id}")
+    
+    return {"status": "success", "vault_path": f"/private/{x_user_id}/"}
