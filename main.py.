@@ -1,0 +1,50 @@
+import re
+
+class SimulationValidator:
+    """
+    The Jensen Shield: Ensures prompts are physically renderable 
+    before engaging the GPU oven.
+    """
+    def __init__(self):
+        # Keywords that signify high-spec renderable physics
+        self.physics_anchors = ["lighting", "shadow", "reflection", "texture", "depth", "8k"]
+        # Keywords that usually cause "hallucinations" or flat renders
+        self.noise_triggers = ["blurry", "low res", "text", "watermark", "deformed"]
+
+    def validate_vision(self, prompt: str) -> dict:
+        clean_prompt = prompt.lower().strip()
+        
+        # 1. Complexity Check: Is it too short to be a masterpiece?
+        if len(clean_prompt) < 10:
+            return {"status": "rejected", "reason": "Input too low-spec. Increase detail."}
+
+        # 2. Physics Check: Does it have 'Aesthetic Authority'?
+        has_physics = any(anchor in clean_prompt for anchor in self.physics_anchors)
+        
+        # 3. Decision Logic
+        if not has_physics:
+            # Auto-upscale: Injecting the 'Muscle' automatically
+            refined_prompt = f"{prompt}, cinematic lighting, ray-traced reflections, 8k resolution"
+            return {
+                "status": "refined", 
+                "original": prompt, 
+                "refined": refined_prompt,
+                "note": "Aesthetic injection applied."
+            }
+            
+        return {"status": "validated", "refined": prompt}
+
+# --- Integration with your FastAPI Brain ---
+validator = SimulationValidator()
+
+@app.post("/api/director-upscale")
+async def upscale_vision(request: ChatRequest):
+    # Pass the prompt through the Shield first
+    validation_result = validator.validate_vision(request.prompt)
+    
+    if validation_result["status"] == "rejected":
+        return {"upscaledPrompt": f"ERROR: {validation_result['reason']}"}
+        
+    # If validated or refined, send to the 'Masterpiece' logic
+    final_prompt = validation_result["refined"]
+    return {"upscaledPrompt": final_prompt}
