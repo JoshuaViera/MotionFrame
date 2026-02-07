@@ -120,6 +120,19 @@ async def upscale_vision(request: ChatRequest):
             "engine": "Antigravity-v2",
             "compute_cost": "Optimized",
             "physics_score": 0.98 if validation["status"] == "validated" else 0.75,
+const UserStatus = () => {
+  const userId = "USER_772_BETA"; // This would come from your login logic
+  
+  return (
+    <div className="flex items-center gap-2 border border-emerald-500/20 p-2 rounded bg-black">
+      <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+      <span className="text-[10px] font-mono text-emerald-500/70 uppercase">
+        VAULT_ACCESS: {userId}
+      </span>
+    </div>
+  );
+};
+
             "safety_shield": "Active"
         }
     } 
