@@ -1,4 +1,4 @@
-// HuggingFace API client for image generation
+// HuggingFace API client for image generation - FREE MODEL VERSION
 import { InferenceClient } from '@huggingface/inference';
 
 export interface HuggingFaceImageResponse {
@@ -21,8 +21,6 @@ const STYLE_MODIFIERS: Record<string, string> = {
   retro: 'retro aesthetic, vintage style, nostalgic, classic design, old-school'
 };
 
-const NEGATIVE_PROMPT = 'ugly, blurry, bad anatomy, bad quality, distorted, watermark, text, signature, low quality, worst quality';
-
 export async function generateImage(params: GenerateImageParams): Promise<HuggingFaceImageResponse> {
   const apiKey = process.env.HUGGINGFACE_API_KEY;
   
@@ -38,18 +36,16 @@ export async function generateImage(params: GenerateImageParams): Promise<Huggin
   const enhancedPrompt = `${params.prompt}, ${styleModifier}`;
 
   try {
-    // Generate image using the SDK
-    // In Node.js (server-side), this returns base64 string
-    // In browser, this returns a Blob
+    // Using Stable Diffusion XL - FREE model (no credits required!)
     const result = await client.textToImage({
-      model: 'runwayml/stable-diffusion-v1-5',
+      model: 'stabilityai/stable-diffusion-xl-base-1.0',
       inputs: enhancedPrompt,
       parameters: {
-        negative_prompt: params.negativePrompt || NEGATIVE_PROMPT,
+        negative_prompt: params.negativePrompt || 'blurry, low quality, distorted, deformed',
       }
     });
 
-    // Handle both string (Node.js) and Blob (browser) responses
+    // Handle both string (Node.js/server) and Blob (browser) responses
     let base64: string;
     let imageBlob: Blob;
 
@@ -69,16 +65,28 @@ export async function generateImage(params: GenerateImageParams): Promise<Huggin
     const url = `data:image/png;base64,${base64}`;
 
     return { blob: imageBlob, url };
-  } catch (error: any) {
+
+  } catch (error: unknown) {
+    const err = error as Error & { message?: string };
+    console.error('HuggingFace API error:', err);
+    
     // Handle specific error cases
-    if (error.message?.includes('loading')) {
+    if (err.message?.includes('loading') || err.message?.includes('Loading')) {
       throw new Error('Model is loading. Please wait 20-30 seconds and try again.');
     }
     
-    if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+    if (err.message?.includes('401') || err.message?.includes('Unauthorized')) {
       throw new Error('Invalid API key. Please check your HuggingFace token.');
     }
+
+    if (err.message?.includes('429') || err.message?.includes('rate')) {
+      throw new Error('Rate limited. Please wait a moment and try again.');
+    }
+
+    if (err.message?.includes('Credit balance')) {
+      throw new Error('Model requires credits. Switching to free model failed - please try again.');
+    }
     
-    throw new Error(`HuggingFace API error: ${error.message || error}`);
+    throw new Error(`HuggingFace API error: ${err.message || err}`);
   }
 }

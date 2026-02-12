@@ -1,33 +1,58 @@
 'use client';
 
-import React from 'react';
-import { useMotionStore } from '@/app/store/useMotionStore';
-import { ANIMATION_TYPES } from '@/app/lib/constants';
+import React, { useState, useMemo } from 'react';
+import { useMotionStore } from '@/store/useMotionStore';
+import { ANIMATION_TYPES } from '@/lib/constants';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Select } from '../ui/Select';
 import { Slider } from '../ui/Slider';
-import { AnimationType } from '@/app/types';
+import { AnimationType } from '@/types';
 
 export const AnimationEditor: React.FC = () => {
   const {
     generatedImage,
     animationSettings,
     setAnimationSettings,
-    animatedPreview,
     setAnimatedPreview,
     setCurrentStep
   } = useMotionStore();
   
-  const handleApplyAnimation = () => {
-    // Mock animated preview - in Phase 2 this will use FFmpeg
-    setAnimatedPreview(generatedImage?.url || null);
+  const [previewKey, setPreviewKey] = useState(0);
+  
+  // Generate CSS animation styles based on settings
+  const animationStyles = useMemo(() => {
+    const duration = animationSettings.duration;
+    const intensity = animationSettings.intensity / 100;
+    
+    if (animationSettings.type === 'zoom') {
+      // Ken Burns zoom effect
+      const maxScale = 1 + (intensity * 0.5); // 1.0 to 1.5 based on intensity
+      return {
+        animation: `zoomEffect ${duration}s ease-in-out infinite alternate`,
+        '--zoom-scale': maxScale,
+      } as React.CSSProperties;
+    } else {
+      // Drift/pan effect
+      const maxDrift = intensity * 10; // 0 to 10% based on intensity
+      return {
+        animation: `driftEffect ${duration}s ease-in-out infinite alternate`,
+        '--drift-amount': `${maxDrift}%`,
+      } as React.CSSProperties;
+    }
+  }, [animationSettings.type, animationSettings.duration, animationSettings.intensity]);
+  
+  // Reset animation when settings change
+  const handleSettingsChange = (newSettings: typeof animationSettings) => {
+    setAnimationSettings(newSettings);
+    setPreviewKey(prev => prev + 1); // Force animation restart
   };
   
   const handleContinue = () => {
-    if (animatedPreview) {
-      setCurrentStep('export');
-    }
+    // Mark that we have animation settings ready (no actual GIF yet)
+    // The export step will generate the real GIF
+    setAnimatedPreview('pending');
+    setCurrentStep('export');
   };
   
   const handleBack = () => {
@@ -36,6 +61,27 @@ export const AnimationEditor: React.FC = () => {
   
   return (
     <div className="max-w-6xl mx-auto">
+      {/* CSS Keyframes */}
+      <style jsx global>{`
+        @keyframes zoomEffect {
+          0% {
+            transform: scale(1);
+          }
+          100% {
+            transform: scale(var(--zoom-scale, 1.2));
+          }
+        }
+        
+        @keyframes driftEffect {
+          0% {
+            transform: translateX(calc(var(--drift-amount, 5%) * -1)) scale(1.1);
+          }
+          100% {
+            transform: translateX(var(--drift-amount, 5%)) scale(1.1);
+          }
+        }
+      `}</style>
+      
       <div className="text-center mb-8">
         <h2 className="text-4xl font-bold text-white mb-2">
           Animate Your Image
@@ -50,28 +96,31 @@ export const AnimationEditor: React.FC = () => {
         <div>
           <Card className="p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Preview</h3>
-            <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
-              {animatedPreview ? (
-                <img
-                  src={animatedPreview}
-                  alt="Animated preview"
-                  className="w-full h-full object-cover"
-                />
-              ) : generatedImage ? (
-                <img
-                  src={generatedImage.url}
-                  alt="Generated"
-                  className="w-full h-full object-cover opacity-50"
-                />
+            <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden mb-4 flex items-center justify-center relative">
+              {generatedImage ? (
+                <div className="w-full h-full overflow-hidden">
+                  <img
+                    key={previewKey}
+                    src={generatedImage.url}
+                    alt="Animation preview"
+                    className="w-full h-full object-cover"
+                    style={animationStyles}
+                  />
+                </div>
               ) : (
                 <span className="text-gray-500">No image</span>
               )}
+              
+              {generatedImage && (
+                <div className="absolute top-2 right-2 bg-electric-blue text-dark px-3 py-1 rounded-full text-xs font-semibold">
+                  Live Preview
+                </div>
+              )}
             </div>
-            {!animatedPreview && (
-              <p className="text-sm text-gray-400 text-center">
-                Configure settings and click "Apply Animation" to preview
-              </p>
-            )}
+            
+            <p className="text-sm text-gray-400 text-center">
+              This is a live CSS preview. The actual GIF will be generated on export.
+            </p>
           </Card>
         </div>
         
@@ -92,7 +141,7 @@ export const AnimationEditor: React.FC = () => {
                 }))}
                 value={animationSettings.type}
                 onChange={(value) =>
-                  setAnimationSettings({
+                  handleSettingsChange({
                     ...animationSettings,
                     type: value as AnimationType
                   })
@@ -110,7 +159,7 @@ export const AnimationEditor: React.FC = () => {
                 label="Duration"
                 value={animationSettings.duration}
                 onChange={(value) =>
-                  setAnimationSettings({
+                  handleSettingsChange({
                     ...animationSettings,
                     duration: value
                   })
@@ -126,7 +175,7 @@ export const AnimationEditor: React.FC = () => {
                 label="Intensity"
                 value={animationSettings.intensity}
                 onChange={(value) =>
-                  setAnimationSettings({
+                  handleSettingsChange({
                     ...animationSettings,
                     intensity: value
                   })
@@ -137,14 +186,18 @@ export const AnimationEditor: React.FC = () => {
                 unit="%"
               />
               
-              {/* Apply Button */}
-              <Button
-                onClick={handleApplyAnimation}
-                className="w-full"
-                variant="secondary"
-              >
-                Apply Animation
-              </Button>
+              {/* Frame count info */}
+              <div className="text-xs text-gray-500 bg-gray-900 p-3 rounded-lg">
+                <p>Estimated output: {Math.floor(animationSettings.duration * 15)} frames @ 15fps</p>
+                <p className="mt-1">GIF will be generated when you click "Export GIF"</p>
+              </div>
+              
+              {/* Preview info */}
+              <div className="bg-electric-blue/10 border border-electric-blue/30 rounded-lg p-4">
+                <p className="text-sm text-electric-blue">
+                  ✨ Adjust settings above to see the animation effect in real-time!
+                </p>
+              </div>
             </div>
           </Card>
         </div>
@@ -156,7 +209,7 @@ export const AnimationEditor: React.FC = () => {
         </Button>
         <Button
           onClick={handleContinue}
-          disabled={!animatedPreview}
+          disabled={!generatedImage}
           size="lg"
         >
           Export GIF →

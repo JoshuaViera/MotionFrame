@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useMotionStore } from '@/app/store/useMotionStore';
+import { useMotionStore } from '@/store/useMotionStore';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
+import { calculateGenerationCost, formatCost } from '@/lib/pricing';
 
 export const GenerationView: React.FC = () => {
   const {
@@ -13,7 +14,10 @@ export const GenerationView: React.FC = () => {
     setGeneratedImage,
     isGenerating,
     setIsGenerating,
-    setCurrentStep
+    setCurrentStep,
+    // NEW: Usage tracking
+    creditBalance,
+    recordTransaction
   } = useMotionStore();
   
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +27,17 @@ export const GenerationView: React.FC = () => {
     setError(null);
     
     try {
+      // NEW: Calculate cost before generation
+      const cost = calculateGenerationCost({ model: 'flux-dev' });
+
+      // NEW: Check balance
+      if (creditBalance < cost) {
+        throw new Error(
+          `Insufficient balance. Image generation costs ${formatCost(cost)}. Current balance: ${formatCost(creditBalance)}`
+        );
+      }
+
+      // Call generation API
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -40,6 +55,7 @@ export const GenerationView: React.FC = () => {
         throw new Error(data.error || 'Failed to generate image');
       }
 
+      // Set generated image
       setGeneratedImage({
         id: Date.now().toString(),
         url: data.imageUrl,
@@ -47,6 +63,24 @@ export const GenerationView: React.FC = () => {
         style: selectedStyle,
         timestamp: new Date()
       });
+
+      // NEW: Record transaction after successful generation
+      try {
+        await recordTransaction({
+          actionType: 'generation',
+          actionDetails: `AI Image Generation - ${selectedStyle} style`,
+          cost,
+          metadata: {
+            prompt,
+            style: selectedStyle,
+            model: 'flux-dev'
+          }
+        });
+        console.log('✅ Transaction recorded:', formatCost(cost));
+      } catch (txError) {
+        console.error('Failed to record transaction:', txError);
+        // Don't block the user if transaction recording fails
+      }
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate image';
@@ -109,6 +143,8 @@ export const GenerationView: React.FC = () => {
               <p className="text-sm text-gray-500">
                 {error.includes('loading') 
                   ? 'The model is warming up. Please wait a moment and try again.'
+                  : error.includes('balance')
+                  ? 'Please add more credits to continue.'
                   : 'Check your API key and try again.'}
               </p>
             </div>

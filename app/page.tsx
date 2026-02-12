@@ -1,6 +1,6 @@
 'use client';
 
-import { useMotionStore } from './store/useMotionStore';
+import { useMotionStore } from '../store/useMotionStore';
 import { Container } from './components/layout/Container';
 import { PromptInput } from './components/workflow/PromptInput';
 import { StyleSelector } from './components/workflow/StyleSelector';

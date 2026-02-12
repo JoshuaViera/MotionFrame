@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useMotionStore } from '@/app/store/useMotionStore';
+import { useMotionStore } from '@/store/useMotionStore';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 

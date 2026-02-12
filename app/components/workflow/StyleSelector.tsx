@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useMotionStore } from '@/app/store/useMotionStore';
-import { STYLE_PRESETS } from '@/app/lib/constants';
+import { useMotionStore } from '@/store/useMotionStore';
+import { STYLE_PRESETS } from '@/lib/constants';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateImage } from '@/app/lib/huggingface';
+import { generateImage } from '@/lib/huggingface';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60; // 60 seconds timeout
