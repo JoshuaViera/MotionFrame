@@ -146,4 +146,3 @@ MIT
 ---
 
 Built by Joshua Viera
-Features by Duvall Morgan & Elliot Chen 
